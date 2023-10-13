@@ -40,14 +40,20 @@ class Status {
   resetMoving() {
     this.is_movings = { "120": false, "90": false, "60": false, "45": false };
   }
+  ActivateAllSent() {
+    this.is_sents = { "120": true, "90": true, "60": true, "45": true };
+  }
+  ActivateAllMoving() {
+    this.is_movings = { "120": true, "90": true, "60": true, "45": true };
+  }
 }
-let server_name = "clocky bot"
+let server_name = "Clocky"
 let msgList = {
   'startTimer': "===ここで正解なら3点===",
   '1/3passedTimer': "===ここで正解なら2点===",
   '2/3passedTimer': "===ここで正解なら1点===",
   'greetServer': server_name + " has joined the server!! Hello!!",
-  'buttonAlready': "このボタンは既に押されています。",
+  'buttonAlready': "ボタンは既に押されています。",
   'sentAlready': "タイマーは既に送信されています。",
   '5secRemaining': "5秒前です。",
   'terminateTimer': "====終了===="
@@ -76,40 +82,59 @@ const button_45 = new Discord.MessageButton()
 const buttons = { "120": button_120, "90": button_90, "60": button_60, "45": button_45 };
 const answers = { "120": "120", "90": "90", "60": "60", "45": "45" };
 client.on("ready", (message) => {
+  // スラッシュコマンドの登録
+  client.application.commands.set([
+    {
+      name: '45',
+      description: '45秒のタイマーを送信します。'
+    },
+    {
+      name: '60',
+      description: '60秒のタイマーを送信します。'
+    },
+    {
+      name: '90',
+      description: '90秒のタイマーを送信します。'
+    },
+    {
+      name: '120',
+      description: '120秒のタイマーを送信します。'
+    }
+  ]);
   console.log("Bot準備完了！");
 });
 
 //ここから
 
 client.on("messageCreate", message => {
-  if (message.author.id == client.user.id || message.author.bot) {
+  if (message.author.id == client.user.id || message.author.bot || statusList[message.channel.id].status == 'disactivated') {
     return;
   }
-  else if (!(message.channel.id in statusList) || statusList[message.channel.id].status == 'disactivated') {
-    if (!(message.channel.id in statusList)) {
-      statusList[message.channel.id] = new Status();
-      sendMsg(message.channel.id, msgList['greetServer']);
-    }
+  if (!(message.channel.id in statusList)) {
+    statusList[message.channel.id] = new Status();
+    // sendMsg(message.channel.id, msgList['greetServer']);
     statusList[message.channel.id].setStatus('activated');
-    return;
   }
   //check if the content includes one of the answers
-  else if (valueExists(message.content, answers)) {
+  if (valueExists(message.content, answers)) {
     if (statusList[message.channel.id].getSent(findKeyByValue(message.content, answers))) {
       sendMsg(message.channel.id, msgList['sentAlready']);
       return;
     }
     else {
-      statusList[message.channel.id].setSent(findKeyByValue(message.content, answers), true);
+      // statusList[message.channel.id].setSent(findKeyByValue(message.content, answers), true);
       sendButton(message.channel.id, findKeyByValue(message.content, answers));
       return;
     }
   }
   else if (message.content == "stop") {
-    // write me
+    statusList[message.channel.id].setStatus('disactivated');
+    statusList[message.channel.id].resetSent();
+    statusList[message.channel.id].resetMoving();
+    sendMsg(message.channel.id, "Botを停止しました。");
   }
   else {
-    sendMsg(message.channel.id, "コマンドが間違っています。");
+    // sendMsg(message.channel.id, "コマンドが間違っています。");
   }
 })
 
@@ -129,51 +154,61 @@ function sendButton(channel_id, button_name) {
 
 async function onInteraction(interaction) {
   const member = await interaction.member.fetch();
-  secsIter.forEach(sec_val => {
-    if (interaction.customId === secsIter[sec_val]) {
-      if (statusList[interaction.channelId].getMoving(sec_val)) {
-        interaction.reply({ content: msgList['buttonAlready'], ephemeral: true });
+  if (interaction.isCommand()) {
+    secsIter.forEach(sec_val => {
+      if (interaction.commandName == sec_val) {
+        interaction.reply({ components: [new Discord.MessageActionRow().addComponents(buttons[sec_val])], ephemeral: false });
         return;
-      } else {
-        statusList[interaction.channelId].setMoving(sec_val, true);
-        statusList[interaction.channelId].passed_time[sec_val] = 0;
-        const testinterval = setInterval(function () {
-          if (statusList[interaction.channelId] === "disactivated") {
-            clearInterval(testinterval);
-          } else if (!statusList[interaction.channelId].getMoving(sec_val)) {
-            clearInterval(testinterval);
-          } else {
-            if (statusList[interaction.channelId].passed_time[sec_val] == 0) {
-              statusList[interaction.channelId].passed_time[sec_val] = sec_val / 3;
-              sendMsg(interaction.channelId, msgList['startTimer']);
-            }
-            else if (statusList[interaction.channelId].passed_time[sec_val] == sec_val / 3) {
-              // write me
-              statusList[interaction.channelId].passed_time[sec_val] = sec_val / 3 * 2;
-              sendMsg(interaction.channelId, msgList['1/3passedTimer']);
-            }
-            else if (statusList[interaction.channelId].passed_time[sec_val] == sec_val / 3 * 2) {
-              // write me
-              statusList[interaction.channelId].passed_time[sec_val] = sec_val;
-              sendMsg(interaction.channelId, msgList['2/3passedTimer']);
-            }
-            else if (statusList[interaction.channelId].passed_time[sec_val] >= sec_val) {
-              clearInterval(testinterval);
-              sendMsg(interaction.channelId, msgList['terminateTimer']);
-              statusList[interaction.channelId].setMoving(sec_val, false);
-              statusList[interaction.channelId].passed_time[sec_val] = 0;
-            }
-          }
-        }, 1000 * sec_val / 3);
-        const remain5sec = setTimeout(() => {
-          if (statusList[interaction.channelId] === "disactivated" || !statusList[interaction.channelId].getMoving(sec_val)) {
-            return;
-          }
-          sendMsg(interaction.channelId, msgList['5secRemaining']);
-        }, 1000 * (sec_val - 5));
       }
-    }
-  });
+
+    });
+  } else if (interaction.isButton()) {
+    secsIter.forEach(sec_val => {
+      if (interaction.customId === secsIter[sec_val]) {
+        if (statusList[interaction.channelId].getMoving(sec_val)) {
+          interaction.reply({ content: msgList['buttonAlready'], ephemeral: true });
+          return;
+        } else {
+          statusList[interaction.channelId].setMoving(sec_val, true);
+          statusList[interaction.channelId].passed_time[sec_val] = 0;
+          const testinterval = setInterval(function () {
+            if (statusList[interaction.channelId] === "disactivated") {
+              clearInterval(testinterval);
+            } else if (!statusList[interaction.channelId].getMoving(sec_val)) {
+              clearInterval(testinterval);
+            } else {
+              if (statusList[interaction.channelId].passed_time[sec_val] == 0) {
+                statusList[interaction.channelId].passed_time[sec_val] = sec_val / 3;
+                sendMsg(interaction.channelId, msgList['startTimer']);
+              }
+              else if (statusList[interaction.channelId].passed_time[sec_val] == sec_val / 3) {
+                // write me
+                statusList[interaction.channelId].passed_time[sec_val] = sec_val / 3 * 2;
+                sendMsg(interaction.channelId, msgList['1/3passedTimer']);
+              }
+              else if (statusList[interaction.channelId].passed_time[sec_val] == sec_val / 3 * 2) {
+                // write me
+                statusList[interaction.channelId].passed_time[sec_val] = sec_val;
+                sendMsg(interaction.channelId, msgList['2/3passedTimer']);
+              }
+              else if (statusList[interaction.channelId].passed_time[sec_val] >= sec_val) {
+                clearInterval(testinterval);
+                sendMsg(interaction.channelId, msgList['terminateTimer']);
+                statusList[interaction.channelId].setMoving(sec_val, false);
+                statusList[interaction.channelId].passed_time[sec_val] = 0;
+              }
+            }
+          }, 1000 * sec_val / 3);
+          const remain5sec = setTimeout(() => {
+            if (statusList[interaction.channelId] === "disactivated" || !statusList[interaction.channelId].getMoving(sec_val)) {
+              return;
+            }
+            sendMsg(interaction.channelId, msgList['5secRemaining']);
+          }, 1000 * (sec_val - 5));
+        }
+      }
+    });
+  }
 }
 
 client.once("ready", () => {
