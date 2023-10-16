@@ -216,6 +216,7 @@ async function onInteraction(interaction) {
     }
   });
 }
+
 client.once("ready", () => {
   console.log("Logged in as " + client.user.tag);
   client.on("interactionCreate", (interaction) => onInteraction(interaction).catch(err => console.log(err)));
