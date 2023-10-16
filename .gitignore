@@ -131,3 +131,4 @@ dist
 
 # for this project
 sample_code.js
+.env
