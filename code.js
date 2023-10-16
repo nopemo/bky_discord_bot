@@ -90,7 +90,7 @@ let msgList = {
   'start60secPrepare': "スタート！",
   '30secRemainingPrepare': "残り30秒！",
   '10secRemainingPrepare': "残り10秒！",
-  '0secRemainingPrepare': "終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！"
+  '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！"
 }
 
 //debug
