@@ -200,7 +200,7 @@ function sendButton(channel_id, button_name) {
   console.log(channel_id + "にボタンを送信しました。");
 }
 
-function evoke60secTimer(interaction_channel) {
+function evoke60secTimer(interaction, interaction_channel) {
   const remain30sec = setTimeout(() => {
     if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
       return;
@@ -259,7 +259,7 @@ async function onInteraction(interaction) {
             return;
           }
           if (interaction.customId == '60') {
-            evoke60secTimer(interaction_channel);
+            evoke60secTimer(interaction, interaction_channel);
             return;
           }
           else {
@@ -315,7 +315,7 @@ async function onInteraction(interaction) {
     secsIter.forEach(sec_val => {
       if (interaction.commandName == sec_val) {
         if (interaction.commandName == '60') {
-          evoke60secTimer(interaction_channel);
+          evoke60secTimer(interaction, interaction_channel);
           return;
         }
         interaction.reply({
