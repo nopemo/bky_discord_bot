@@ -121,7 +121,7 @@ const buttons = {
   "60": button_60,
   "45": button_45
 };
-const answers = { "120": "120", "90": "remove this timer", "60": "60", "45": "45" };
+const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "90", "60": "60", "45": "45" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
   client.application.commands.set([
@@ -133,14 +133,14 @@ client.on("ready", (message) => {
       name: '60',
       description: '60秒のタイマーを送信します。'
     },
-    // {
-    //   name: '90',
-    //   description: '90秒のタイマーを送信します。'
-    // },
     {
-      name: '120',
-      description: '120秒のタイマーを送信します。'
+      name: '90',
+      description: '90秒のタイマーを送信します。'
     },
+    // {
+    //   name: '120',
+    //   description: '120秒のタイマーを送信します。'
+    // },
     {
       name: 'stop',
       description: 'タイマーを停止します。'
