@@ -65,11 +65,14 @@ class Status {
     this.timeout = timeout;
   }
   terminateIntervalAndTimeOut() {
-    if (this.interval == null || this.timeout == null) {
-      return;
+    if (this.interval != null) {
+      clearInterval(this.interval);
     }
-    clearInterval(this.interval);
-    clearTimeout(this.timeout);
+    if (this.timeout != null) {
+      this.timeout.forEach(timeout => {
+        clearTimeout(timeout);
+      });
+    }
   }
 }
 let server_name = "Clocky"
@@ -83,8 +86,14 @@ let msgList = {
   '5secRemaining': "5秒前です。",
   'terminateTimer': "====終了====",
   'timerHasStarted': "タイマーを開始しました。",
-  'abortTimer': "タイマーを停止しました。"
+  'abortTimer': "タイマーを停止しました。",
+  'start60secPrepare': "スタート！",
+  '30secRemainingPrepare': "残り30秒！",
+  '10secRemainingPrepare': "残り10秒！",
+  '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！"
 }
+
+//debug
 
 const button_120 = new MessageButton()
   .setCustomId('120')
@@ -106,8 +115,13 @@ const button_45 = new MessageButton()
   .setLabel('45秒タイマースタート')
   .setStyle('SUCCESS')
   .setEmoji('🔴');
-const buttons = { "120": button_120, "90": button_90, "60": button_60, "45": button_45 };
-const answers = { "120": "120", "90": "90", "60": "60", "45": "45" };
+const buttons = {
+  "120": button_120,
+  "90": button_90,
+  "60": button_60,
+  "45": button_45
+};
+const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "90", "60": "60", "45": "45" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
   client.application.commands.set([
@@ -123,10 +137,10 @@ client.on("ready", (message) => {
       name: '90',
       description: '90秒のタイマーを送信します。'
     },
-    {
-      name: '120',
-      description: '120秒のタイマーを送信します。'
-    },
+    // {
+    //   name: '120',
+    //   description: '120秒のタイマーを送信します。'
+    // },
     {
       name: 'stop',
       description: 'タイマーを停止します。'
@@ -215,49 +229,79 @@ async function onInteraction(interaction) {
             console.log("the button has been terminated because the status is not moving: " + sec_val);
             return;
           }
-          const testinterval = setInterval(function () {
-            // debug start
-            console.log("testinterval has set: " + sec_val);
-            // debug end
-            if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3) {
-              // write me
-              statusList[interaction_channel].passed_time[sec_val] = sec_val / 3 * 2;
-              sendMsg(interaction_channel, msgList['1/3passedTimer']);
-              // debug start
-              console.log("the button clicked: " + sec_val);
-              // debug end
-            }
-            else if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3 * 2) {
-              statusList[interaction_channel].passed_time[sec_val] = sec_val;
-              sendMsg(interaction_channel, msgList['2/3passedTimer']);
-              // debug start
-              console.log("the button clicked: " + sec_val);
-              // debug end
-            }
-            else if (statusList[interaction_channel].passed_time[sec_val] >= sec_val) {
-              clearInterval(testinterval);
-              sendMsg(interaction_channel, msgList['terminateTimer']);
-              // sendButton(interaction_channel, sec_val);
+          if (interaction.customId == '60') {
+            const remain30sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
+            }, 1000 * (30));
+            const remain10sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
+            }, 1000 * (50));
+            const remain0sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
               statusList[interaction_channel].setMoving(sec_val, false);
               statusList[interaction_channel].passed_time[sec_val] = 0;
+            }, 1000 * (60));
+            statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
+            // debug start
+            console.log("the button clicked: " + sec_val);
+            // debug end
+            interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
+            return;
+          }
+          else {
+            const testinterval = setInterval(function () {
               // debug start
-              console.log("the button has been terminated: " + sec_val);
+              console.log("testinterval has set: " + sec_val);
               // debug end
-            }
-          }, 1000 * sec_val / 3);
-          const remain5sec = setTimeout(() => {
-            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
-              return;
-            }
-            sendMsg(interaction_channel, msgList['5secRemaining']);
-          }, 1000 * (sec_val - 5));
-          statusList[interaction_channel].setIntervalAndTimeOut(testinterval, remain5sec);
-          statusList[interaction_channel].setPassedTime(sec_val, sec_val / 3);
-          // debug start
-          console.log("the button clicked: " + sec_val);
-          // debug end
-          interaction.reply({ content: msgList['startTimer'], ephemeral: false });
-          return;
+              if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3) {
+                // write me
+                statusList[interaction_channel].passed_time[sec_val] = sec_val / 3 * 2;
+                sendMsg(interaction_channel, msgList['1/3passedTimer']);
+                // debug start
+                console.log("the button clicked: " + sec_val);
+                // debug end
+              }
+              else if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3 * 2) {
+                statusList[interaction_channel].passed_time[sec_val] = sec_val;
+                sendMsg(interaction_channel, msgList['2/3passedTimer']);
+                // debug start
+                console.log("the button clicked: " + sec_val);
+                // debug end
+              }
+              else if (statusList[interaction_channel].passed_time[sec_val] >= sec_val) {
+                clearInterval(testinterval);
+                sendMsg(interaction_channel, msgList['terminateTimer']);
+                // sendButton(interaction_channel, sec_val);
+                statusList[interaction_channel].setMoving(sec_val, false);
+                statusList[interaction_channel].passed_time[sec_val] = 0;
+                // debug start
+                console.log("the button has been terminated: " + sec_val);
+                // debug end
+              }
+            }, 1000 * sec_val / 3);
+            const remain5sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['5secRemaining']);
+            }, 1000 * (sec_val - 5));
+            statusList[interaction_channel].setIntervalAndTimeOut(testinterval, [remain5sec]);
+            statusList[interaction_channel].setPassedTime(sec_val, sec_val / 3);
+            // debug start
+            console.log("the button clicked: " + sec_val);
+            // debug end
+            interaction.reply({ content: msgList['startTimer'], ephemeral: false });
+            return;
+          }
         }
       }
     });
