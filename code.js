@@ -86,6 +86,8 @@ let msgList = {
   'abortTimer': "タイマーを停止しました。"
 }
 
+//debug
+
 const button_120 = new MessageButton()
   .setCustomId('120')
   .setLabel('120秒タイマースタート')
