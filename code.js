@@ -200,34 +200,6 @@ function sendButton(channel_id, button_name) {
   console.log(channel_id + "にボタンを送信しました。");
 }
 
-function evoke60secTimer(interaction, interaction_channel) {
-  const remain30sec = setTimeout(() => {
-    if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-      return;
-    }
-    sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
-  }, 1000 * (30));
-  const remain10sec = setTimeout(() => {
-    if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-      return;
-    }
-    sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
-  }, 1000 * (50));
-  const remain0sec = setTimeout(() => {
-    if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-      return;
-    }
-    sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
-    statusList[interaction_channel].setMoving('60', false);
-    statusList[interaction_channel].passed_time['60'] = 0;
-  }, 1000 * (60));
-  statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
-  // debug start
-  console.log("the button clicked: " + '60');
-  // debug end
-  interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
-}
-
 async function onInteraction(interaction) {
   const member = await interaction.member.fetch();
   const interaction_channel = interaction.channelId;
@@ -259,7 +231,31 @@ async function onInteraction(interaction) {
             return;
           }
           if (interaction.customId == '60') {
-            evoke60secTimer(interaction, interaction_channel);
+            const remain30sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
+            }, 1000 * (30));
+            const remain10sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
+            }, 1000 * (50));
+            const remain0sec = setTimeout(() => {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+                return;
+              }
+              sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
+              statusList[interaction_channel].setMoving('60', false);
+              statusList[interaction_channel].passed_time['60'] = 0;
+            }, 1000 * (60));
+            statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
+            // debug start
+            console.log("the button clicked: " + '60');
+            // debug end
+            interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
             return;
           }
           else {
@@ -315,7 +311,31 @@ async function onInteraction(interaction) {
     secsIter.forEach(sec_val => {
       if (interaction.commandName == sec_val) {
         if (interaction.commandName == '60') {
-          evoke60secTimer(interaction, interaction_channel);
+          const remain30sec = setTimeout(() => {
+            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              return;
+            }
+            sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
+          }, 1000 * (30));
+          const remain10sec = setTimeout(() => {
+            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              return;
+            }
+            sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
+          }, 1000 * (50));
+          const remain0sec = setTimeout(() => {
+            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              return;
+            }
+            sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
+            statusList[interaction_channel].setMoving('60', false);
+            statusList[interaction_channel].passed_time['60'] = 0;
+          }, 1000 * (60));
+          statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
+          // debug start
+          console.log("the button clicked: " + '60');
+          // debug end
+          interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
           return;
         }
         interaction.reply({
