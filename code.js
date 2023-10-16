@@ -115,8 +115,13 @@ const button_45 = new MessageButton()
   .setLabel('45秒タイマースタート')
   .setStyle('SUCCESS')
   .setEmoji('🔴');
-const buttons = { "120": button_120, "90": button_90, "60": button_60, "45": button_45 };
-const answers = { "120": "120", "90": "90", "60": "60", "45": "45" };
+const buttons = {
+  "120": button_120,
+  "90": button_90,
+  "60": button_60,
+  "45": button_45
+};
+const answers = { "120": "120", "90": "remove this timer", "60": "60", "45": "45" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
   client.application.commands.set([
