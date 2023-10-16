@@ -121,7 +121,7 @@ const buttons = {
   "60": button_60,
   "45": button_45
 };
-const answers = { "120": "スマンブラッキーこれ消すのね、了解したわfasdfaf。", "90": "コーヒーよりも紅茶のほうが好きdafasdgfh", "60": "ぬいぐるみfasdga", "45": "なんでやねんagathghouuy" };
+const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "90", "60": "60", "45": "45" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
   client.application.commands.set([
@@ -175,7 +175,7 @@ client.on("messageCreate", message => {
       return;
     }
   }
-  else if (message.content == "stopストップするらしいよ。コマンドあるから要らないよね。e") {
+  else if (message.content == "stop") {
     statusList[message.channel.id].setStatus('disactivated');
     statusList[message.channel.id].resetSent();
     statusList[message.channel.id].resetMoving();
@@ -199,7 +199,6 @@ function sendButton(channel_id, button_name) {
   statusList[channel_id].setStatus('buttons_sent');
   console.log(channel_id + "にボタンを送信しました。");
 }
-
 async function onInteraction(interaction) {
   const member = await interaction.member.fetch();
   const interaction_channel = interaction.channelId;
@@ -232,28 +231,28 @@ async function onInteraction(interaction) {
           }
           if (interaction.customId == '60') {
             const remain30sec = setTimeout(() => {
-              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
                 return;
               }
               sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
             }, 1000 * (30));
             const remain10sec = setTimeout(() => {
-              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
                 return;
               }
               sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
             }, 1000 * (50));
             const remain0sec = setTimeout(() => {
-              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
+              if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
                 return;
               }
               sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
-              statusList[interaction_channel].setMoving('60', false);
-              statusList[interaction_channel].passed_time['60'] = 0;
+              statusList[interaction_channel].setMoving(sec_val, false);
+              statusList[interaction_channel].passed_time[sec_val] = 0;
             }, 1000 * (60));
             statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
             // debug start
-            console.log("the button clicked: " + '60');
+            console.log("the button clicked: " + sec_val);
             // debug end
             interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
             return;
@@ -310,34 +309,6 @@ async function onInteraction(interaction) {
   else if (interaction.isCommand()) {
     secsIter.forEach(sec_val => {
       if (interaction.commandName == sec_val) {
-        if (interaction.commandName == '60') {
-          const remain30sec = setTimeout(() => {
-            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-              return;
-            }
-            sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
-          }, 1000 * (30));
-          const remain10sec = setTimeout(() => {
-            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-              return;
-            }
-            sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
-          }, 1000 * (50));
-          const remain0sec = setTimeout(() => {
-            if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving('60')) {
-              return;
-            }
-            sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
-            statusList[interaction_channel].setMoving('60', false);
-            statusList[interaction_channel].passed_time['60'] = 0;
-          }, 1000 * (60));
-          statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
-          // debug start
-          console.log("the button clicked: " + '60');
-          // debug end
-          interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
-          return;
-        }
         interaction.reply({
           components: [
             new MessageActionRow().addComponents(buttons[sec_val])], ephemeral: false
