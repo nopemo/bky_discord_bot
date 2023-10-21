@@ -2,6 +2,7 @@ const { ButtonBuilder, ButtonStyle, Client, MessageButton, MessageActionRow } = 
 const options = { intents: ["GUILDS", "GUILD_MESSAGES"] };
 const client = new Client(options);
 const secsIter = ['120', '90', '60', '45'];
+const dirIter = ['left', 'middle', 'right'];
 let statusList = {};
 function sendMsg(channelId, text, option = {}) {
   client.channels.cache.get(channelId).send(text, option)
@@ -90,10 +91,12 @@ let msgList = {
   'start60secPrepare': "スタート！",
   '30secRemainingPrepare': "残り30秒！",
   '10secRemainingPrepare': "残り10秒！",
-  '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！"
+  '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！",
+  'left': "左を選択しました。",
+  'middle': "中央を選択しました。",
+  'right': "右を選択しました。"
 }
 
-//debug
 
 const button_120 = new MessageButton()
   .setCustomId('120')
@@ -115,37 +118,102 @@ const button_45 = new MessageButton()
   .setLabel('45秒タイマースタート')
   .setStyle('SUCCESS')
   .setEmoji('🔴');
-const buttons = {
+const button_left = new MessageButton()
+  .setCustomId('left')
+  .setLabel('左')
+  .setStyle('SUCCESS')
+  .setEmoji('🔴');
+const button_middle = new MessageButton()
+  .setCustomId('middle')
+  .setLabel('中央')
+  .setStyle('SUCCESS')
+  .setEmoji('🔴');
+const button_right = new MessageButton()
+  .setCustomId('right')
+  .setLabel('右')
+  .setStyle('SUCCESS')
+  .setEmoji('🔴');
+let buttons = {
   "120": button_120,
   "90": button_90,
   "60": button_60,
-  "45": button_45
+  "45": button_45,
+  "left": button_left,
+  "middle": button_middle,
+  "right": button_right
 };
-const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "90", "60": "60", "45": "45" };
+let num_of_questions = 6;
+for (let i = 0; i < num_of_questions; i++) {
+  buttons["a" + i + "_obst"] = new MessageButton()
+    .setCustomId("a" + i + "_obst")
+    .setLabel("妨害開始")
+    .setStyle('SUCCESS')
+  // .setEmoji('🔴');
+  secsIter.forEach(sec_val => {
+    dirIter.forEach(dir_val => {
+      buttons[sec_val + "_a" + i + "_" + dir_val] = new MessageButton()
+        .setCustomId(sec_val + "_a" + i + "_" + dir_val)
+        .setLabel("解答開始")
+        .setStyle('DANGER')
+      // .setEmoji('🔴');
+      buttons[sec_val + "_b" + i + "_" + dir_val] = new MessageButton()
+        .setCustomId(sec_val + "_b" + i + "_" + dir_val)
+        .setLabel("解答開始")
+        .setStyle('DANGER')
+    });
+  });
+};
+let commands = [
+  {
+    name: '45',
+    description: '45秒のタイマーを送信します。'
+  },
+  {
+    name: '60',
+    description: '60秒のタイマーを送信します。'
+  },
+  {
+    name: '90',
+    description: '90秒のタイマーを送信します。'
+  },
+  // {
+  //   name: '120',
+  //   description: '120秒のタイマーを送信します。'
+  // },
+  {
+    name: 'stop',
+    description: 'タイマーを停止します。'
+  }
+];
+//　スラッシュコマンドの追加を行う
+
+for (let i = 0; i < num_of_questions; i++) {
+  commands.push({
+    name: 'a' + i,
+    description: 'a' + i + 'を実行します。'
+  });
+  commands.push({
+    name: 'b' + i,
+    description: 'b' + i + 'を実行します。'
+  });
+  secsIter.forEach(sec_val => {
+    dirIter.forEach(dir_val => {
+      commands.push({
+        name: sec_val + "_" + i + "a_" + dir_val,
+        description: sec_val + "_" + i + "a_" + dir_val + "を実行します。"
+      });
+      commands.push({
+        name: sec_val + "_" + i + "b_" + dir_val,
+        description: sec_val + "_" + i + "b_" + dir_val + "を実行します。"
+      });
+    });
+  });
+}
+
+const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
-  client.application.commands.set([
-    {
-      name: '45',
-      description: '45秒のタイマーを送信します。'
-    },
-    {
-      name: '60',
-      description: '60秒のタイマーを送信します。'
-    },
-    {
-      name: '90',
-      description: '90秒のタイマーを送信します。'
-    },
-    // {
-    //   name: '120',
-    //   description: '120秒のタイマーを送信します。'
-    // },
-    {
-      name: 'stop',
-      description: 'タイマーを停止します。'
-    }
-  ]);
+  client.application.commands.set(commands);
   console.log("Bot準備完了！");
 });
 
@@ -164,18 +232,18 @@ client.on("messageCreate", message => {
     return;
   }
   //check if the content includes one of the answers
-  if (valueExists(message.content, answers)) {
-    if (statusList[message.channel.id].getSent(findKeyByValue(message.content, answers))) {
-      sendMsg(message.channel.id, msgList['sentAlready']);
-      return;
-    }
-    else {
-      // statusList[message.channel.id].setSent(findKeyByValue(message.content, answers), true);
-      sendButton(message.channel.id, findKeyByValue(message.content, answers));
-      return;
-    }
-  }
-  else if (message.content == "stop") {
+  // if (valueExists(message.content, answers)) {
+  //   if (statusList[message.channel.id].getSent(findKeyByValue(message.content, answers))) {
+  //     sendMsg(message.channel.id, msgList['sentAlready']);
+  //     return;
+  //   }
+  //   else {
+  //     // statusList[message.channel.id].setSent(findKeyByValue(message.content, answers), true);
+  //     sendButton(message.channel.id, findKeyByValue(message.content, answers));
+  //     return;
+  //   }
+  // }
+  if (message.content == "stop") {
     statusList[message.channel.id].setStatus('disactivated');
     statusList[message.channel.id].resetSent();
     statusList[message.channel.id].resetMoving();
@@ -197,7 +265,14 @@ function sendButton(channel_id, button_name) {
     ]
   });
   statusList[channel_id].setStatus('buttons_sent');
-  console.log(channel_id + "にボタンを送信しました。");
+  console.log(channel_id + "にボタン" + button_name + "を送信しました。");
+}
+function sendImg(channel_id, img_name) {
+  client.channels.cache.get(channel_id).send({
+    files: [img_name]
+  });
+  statusList[channel_id].setStatus('img_sent');
+  console.log(channel_id + "に画像" + img_name + "を送信しました。");
 }
 async function onInteraction(interaction) {
   const member = await interaction.member.fetch();
@@ -207,6 +282,18 @@ async function onInteraction(interaction) {
     statusList[interaction_channel].setStatus('activated');
   }
   if (interaction.isButton()) {
+    if (statusList[interaction_channel].getStatus() == "disactivated") {
+      return;
+    }
+    if (interaction.customId == 'left' || interaction.customId == 'middle' || interaction.customId == 'right') {
+      interaction.reply({ content: msgList[interaction.customId], ephemeral: false });
+    }
+    for (let i = 0; i < num_of_questions; i++) {
+      if (interaction.customId == "a" + i + "_obst") {
+        sendImg(interaction_channel, "img/a" + i + ".png");
+        return;
+      }
+    }
     secsIter.forEach(sec_val => {
       // debug start
       console.log("secsIter for each: " + sec_val);
@@ -307,6 +394,24 @@ async function onInteraction(interaction) {
     });
   }
   else if (interaction.isCommand()) {
+    for (let i = 0; i < num_of_questions; i++) {
+      if (let i = 0; i < num_of_questions; i++) {
+        if (interaction.commandName == "a" + i) {
+          interaction.reply({
+            components: [
+              new MessageActionRow().addComponents(buttons["a" + i + "_obst"])], ephemeral: false
+          });
+          return;
+        }
+        else if (interaction.commandName == "b" + i) {
+          interaction.reply({
+            components: [
+              new MessageActionRow().addComponents(buttons["b" + i + "_obst"])], ephemeral: false
+          });
+          return;
+        }
+      }
+    }
     secsIter.forEach(sec_val => {
       if (interaction.commandName == sec_val) {
         interaction.reply({
@@ -315,6 +420,24 @@ async function onInteraction(interaction) {
         });
         return;
       }
+      dirIter.forEach(dir_val => {
+        for (let i = 0; i < num_of_questions; i++) {
+          if (interaction.commandName == sec_val + "_" + i + "a_" + dir_val) {
+            interaction.reply({
+              components: [
+                new MessageActionRow().addComponents(buttons[sec_val + "_a" + i + "_" + dir_val])], ephemeral: false
+            });
+            return;
+          }
+          else if (interaction.commandName == sec_val + "_" + i + "b_" + dir_val) {
+            interaction.reply({
+              components: [
+                new MessageActionRow().addComponents(buttons[sec_val + "_b" + i + "_" + dir_val])], ephemeral: false
+            });
+            return;
+          }
+        }
+      });
     });
     if (interaction.commandName == "stop") {
       statusList[interaction_channel].resetSent();
