@@ -205,22 +205,22 @@ let commands = [
     description: "引数を用いたコマンドのテストを行います。",
     options: [
       {
-        type: "INTEGER",
+        type: "STRING",
         name: "question_num",
         description: "何問目ですか？",
         required: true,
         choices: [
           {
             name: "チュートリアル",
-            value: 0
+            value: "0"
           },
           {
             name: "1問目",
-            value: 1
+            value: "1"
           },
           {
             name: "2問目",
-            value: 2
+            value: "2"
           }
         ],
       },
@@ -261,18 +261,18 @@ let commands = [
         ],
       },
       {
-        type: "INTEGER",
+        type: "STRING",
         name: "sec_val",
         description: "何秒ですか？",
         required: true,
         choices: [
           {
             name: "45",
-            value: 45
+            value: "45"
           },
           {
             name: "90",
-            value: 90
+            value: "90"
           }
         ],
       }
@@ -534,10 +534,11 @@ async function onInteraction(interaction) {
         }
       }
     });
+    console.log("check point1");
     dirIter.forEach(dir_val => {
       secsIter.forEach(sec_val => {
         for (let i = 0; i < num_of_questions; i++) { ///ここから
-
+          console.log("check point2");
           if (interaction.customId == sec_val + "_a_" + i + "_" + dir_val || interaction.customId == sec_val + "_b_" + i + "_" + dir_val) {
             let sec_val = interaction.customId.split("_")[0];
             let mode = interaction.customId.split("_")[1];
