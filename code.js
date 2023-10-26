@@ -88,7 +88,7 @@ let msgList = {
   'terminateTimer': "====終了====",
   'timerHasStarted': "タイマーを開始しました。",
   'abortTimer': "タイマーを停止しました。",
-  'start60secPrepare': "スタート！",
+  'start60secPrepare': "スタート！隠す場所を左,右,中央から選んでください！",
   '30secRemainingPrepare': "残り30秒！",
   '10secRemainingPrepare': "残り10秒！",
   '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！",
@@ -151,13 +151,13 @@ for (let i = 0; i < num_of_questions; i++) {
   // .setEmoji('🔴');
   secsIter.forEach(sec_val => {
     dirIter.forEach(dir_val => {
-      buttons[sec_val + "_a" + i + "_" + dir_val] = new MessageButton()
-        .setCustomId(sec_val + "_a" + i + "_" + dir_val)
+      buttons[sec_val + "_a_" + i + "_" + dir_val] = new MessageButton()
+        .setCustomId(sec_val + "_a_" + i + "_" + dir_val)
         .setLabel("解答開始")
         .setStyle('DANGER')
       // .setEmoji('🔴');
-      buttons[sec_val + "_b" + i + "_" + dir_val] = new MessageButton()
-        .setCustomId(sec_val + "_b" + i + "_" + dir_val)
+      buttons[sec_val + "_b_" + i + "_" + dir_val] = new MessageButton()
+        .setCustomId(sec_val + "_b_" + i + "_" + dir_val)
         .setLabel("解答開始")
         .setStyle('DANGER')
     });
@@ -291,6 +291,31 @@ async function onInteraction(interaction) {
     for (let i = 0; i < num_of_questions; i++) {
       if (interaction.customId == "a" + i + "_obst") {
         sendImg(interaction_channel, "img/a" + i + ".png");
+        const remain30sec = setTimeout(() => {
+          if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+            return;
+          }
+          sendMsg(interaction_channel, msgList['30secRemainingPrepare']);
+        }, 1000 * (30));
+        const remain10sec = setTimeout(() => {
+          if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+            return;
+          }
+          sendMsg(interaction_channel, msgList['10secRemainingPrepare']);
+        }, 1000 * (50));
+        const remain0sec = setTimeout(() => {
+          if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+            return;
+          }
+          sendMsg(interaction_channel, msgList['0secRemainingPrepare']);
+          statusList[interaction_channel].setMoving(sec_val, false);
+          statusList[interaction_channel].passed_time[sec_val] = 0;
+        }, 1000 * (60));
+        statusList[interaction_channel].setIntervalAndTimeOut(null, [remain30sec, remain10sec, remain0sec]);
+        // debug start
+        console.log("the button clicked: " + sec_val);
+        // debug end
+        interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
         return;
       }
     }
@@ -392,6 +417,81 @@ async function onInteraction(interaction) {
         }
       }
     });
+    dirIter.forEach(dir_val => {
+      secsIter.forEach(sec_val => {
+        for (let i = 0; i < num_of_questions; i++) { ///ここから
+
+          if (interaction.customId == sec_val + "_a_" + i + "_" + dir_val || interaction.customId == sec_val + "_b_" + i + "_" + dir_val) {
+            let sec_val = interaction.customId.split("_")[0];
+            let mode = interaction.customId.split("_")[1];
+            let question_num = interaction.customId.split("_")[2];
+            let dir_val = interaction.customId.split("_")[3];
+            if (statusList[interaction_channel].getMoving(sec_val)) {
+              interaction.reply({ content: msgList['buttonAlready'], ephemeral: true });
+              return;
+            } else {
+              statusList[interaction_channel].setMoving(sec_val, true);
+              statusList[interaction_channel].setPassedTime(sec_val, 0);
+              // debug start
+              console.log("the button clicked: " + sec_val);
+              // debug end
+              if (statusList[interaction_channel] === "disactivated") {
+                console.log("the button has been terminated because the status is disactivated: " + sec_val);
+                return;
+              }
+              if (!statusList[interaction_channel].getMoving(sec_val)) {
+                console.log("the button has been terminated because the status is not moving: " + sec_val);
+                return;
+              }
+              const testinterval = setInterval(function () {
+                // debug start
+                console.log("testinterval has set: " + sec_val);
+                // debug end
+                if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3) {
+                  // write me
+                  statusList[interaction_channel].passed_time[sec_val] = sec_val / 3 * 2;
+                  sendMsg(interaction_channel, msgList['1/3passedTimer']);
+                  // debug start
+                  console.log("the button clicked: " + sec_val);
+                  // debug end
+                }
+                else if (statusList[interaction_channel].passed_time[sec_val] == sec_val / 3 * 2) {
+                  statusList[interaction_channel].passed_time[sec_val] = sec_val;
+                  sendMsg(interaction_channel, msgList['2/3passedTimer']);
+                  // debug start
+                  console.log("the button clicked: " + sec_val);
+                  // debug end
+                }
+                else if (statusList[interaction_channel].passed_time[sec_val] >= sec_val) {
+                  clearInterval(testinterval);
+                  sendMsg(interaction_channel, msgList['terminateTimer']);
+                  // sendButton(interaction_channel, sec_val);
+                  statusList[interaction_channel].setMoving(sec_val, false);
+                  statusList[interaction_channel].passed_time[sec_val] = 0;
+                  // debug start
+                  console.log("the button has been terminated: " + sec_val);
+                  // debug end
+                }
+              }, 1000 * sec_val / 3);
+              const remain5sec = setTimeout(() => {
+                if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+                  return;
+                }
+                sendMsg(interaction_channel, msgList['5secRemaining']);
+              }, 1000 * (sec_val - 5));
+              statusList[interaction_channel].setIntervalAndTimeOut(testinterval, [remain5sec]);
+              statusList[interaction_channel].setPassedTime(sec_val, sec_val / 3);
+              // debug start
+              console.log("the button clicked: " + sec_val);
+              // debug end
+              sendImg(interaction_channel, "img/" + mode + question_num + dir_val + ".png");
+              interaction.reply({ content: msgList['startTimer'], ephemeral: false });
+              return;
+            }
+          }///ここまで
+        }
+      });
+    });
   }
   else if (interaction.isCommand()) {
     for (let i = 0; i < num_of_questions; i++) {
@@ -425,14 +525,14 @@ async function onInteraction(interaction) {
           if (interaction.commandName == sec_val + "_" + i + "a_" + dir_val) {
             interaction.reply({
               components: [
-                new MessageActionRow().addComponents(buttons[sec_val + "_a" + i + "_" + dir_val])], ephemeral: false
+                new MessageActionRow().addComponents(buttons[sec_val + "_a_" + i + "_" + dir_val])], ephemeral: false
             });
             return;
           }
           else if (interaction.commandName == sec_val + "_" + i + "b_" + dir_val) {
             interaction.reply({
               components: [
-                new MessageActionRow().addComponents(buttons[sec_val + "_b" + i + "_" + dir_val])], ephemeral: false
+                new MessageActionRow().addComponents(buttons[sec_val + "_b_" + i + "_" + dir_val])], ephemeral: false
             });
             return;
           }
