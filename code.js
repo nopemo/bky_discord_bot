@@ -524,7 +524,7 @@ async function onInteraction(interaction) {
               // debug start
               console.log("the button clicked: " + sec_val);
               // debug end
-              sendImg(interaction_channel, "" + mode + question_num + dir_val + ".png");
+              sendImg(interaction_channel, "" + mode + question_num + "_" + dir_val + ".png");
               interaction.reply({ content: msgList['startTimer'], ephemeral: false });
               return;
             }
