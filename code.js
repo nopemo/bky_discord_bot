@@ -284,8 +284,9 @@ function sendButton(channel_id, button_name) {
   console.log(channel_id + "にボタン" + button_name + "を送信しました。");
 }
 function sendImg(channel_id, img_name) {
+  let send_image_url = "https://cdn.glitch.global/127e421d-34d2-438f-906c-d1dfaae6ee13/" + img_name;
   client.channels.cache.get(channel_id).send({
-    files: [img_name]
+    files: [send_image_url]
   });
   statusList[channel_id].setStatus('img_sent');
   console.log(channel_id + "に画像" + img_name + "を送信しました。");
