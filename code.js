@@ -183,6 +183,22 @@ let commands = [
   {
     name: 'stop',
     description: 'タイマーを停止します。'
+  },
+  {
+    name: 'left',
+    description: '左を選択します。'
+  },
+  {
+    name: 'middle',
+    description: '中央を選択します。'
+  },
+  {
+    name: 'right',
+    description: '右を選択します。'
+  },
+  {
+    name: 'a0',
+    description: 'a0を実行します。'
   }
 ];
 //　スラッシュコマンドの追加を行う
