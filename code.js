@@ -212,18 +212,18 @@ for (let i = 0; i < num_of_questions; i++) {
     name: 'b' + i,
     description: 'b' + i + 'を実行します。'
   });
-  // secsIter.forEach(sec_val => {
-  //   dirIter.forEach(dir_val => {
-  //     commands.push({
-  //       name: sec_val + "_" + i + "a_" + dir_val,
-  //       description: sec_val + "_" + i + "a_" + dir_val + "を実行します。"
-  //     });
-  //     commands.push({
-  //       name: sec_val + "_" + i + "b_" + dir_val,
-  //       description: sec_val + "_" + i + "b_" + dir_val + "を実行します。"
-  //     });
-  //   });
-  // });
+  secsIter.forEach(sec_val => {
+    dirIter.forEach(dir_val => {
+      commands.push({
+        name: sec_val + "_" + i + "_a_" + dir_val[0],
+        description: sec_val + "_" + i + "_a_" + dir_val + "を実行します。"
+      });
+      commands.push({
+        name: sec_val + "_" + i + "_b_" + dir_val[0],
+        description: sec_val + "_" + i + "_b_" + dir_val + "を実行します。"
+      });
+    });
+  });
 }
 
 const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
