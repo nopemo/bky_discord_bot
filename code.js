@@ -212,18 +212,18 @@ for (let i = 0; i < num_of_questions; i++) {
     name: 'b' + i,
     description: 'b' + i + 'を実行します。'
   });
-  secsIter.forEach(sec_val => {
-    dirIter.forEach(dir_val => {
-      commands.push({
-        name: sec_val + "_" + i + "a_" + dir_val,
-        description: sec_val + "_" + i + "a_" + dir_val + "を実行します。"
-      });
-      commands.push({
-        name: sec_val + "_" + i + "b_" + dir_val,
-        description: sec_val + "_" + i + "b_" + dir_val + "を実行します。"
-      });
-    });
-  });
+  // secsIter.forEach(sec_val => {
+  //   dirIter.forEach(dir_val => {
+  //     commands.push({
+  //       name: sec_val + "_" + i + "a_" + dir_val,
+  //       description: sec_val + "_" + i + "a_" + dir_val + "を実行します。"
+  //     });
+  //     commands.push({
+  //       name: sec_val + "_" + i + "b_" + dir_val,
+  //       description: sec_val + "_" + i + "b_" + dir_val + "を実行します。"
+  //     });
+  //   });
+  // });
 }
 
 const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
@@ -305,8 +305,10 @@ async function onInteraction(interaction) {
       interaction.reply({ content: msgList[interaction.customId], ephemeral: false });
     }
     for (let i = 0; i < num_of_questions; i++) {
-      if (interaction.customId == "a" + i + "_obst") {
-        sendImg(interaction_channel, "img/a" + i + ".png");
+      if (interaction.customId == "a" + i + "_obst" || interaction.customId == "b" + i + "_obst") {
+        let mode = interaction.customId[0];
+        let question_num = "60";
+        sendImg(interaction_channel, mode + i + ".png");
         const remain30sec = setTimeout(() => {
           if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
             return;
@@ -334,6 +336,7 @@ async function onInteraction(interaction) {
         interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
         return;
       }
+
     }
     secsIter.forEach(sec_val => {
       // debug start
@@ -500,7 +503,7 @@ async function onInteraction(interaction) {
               // debug start
               console.log("the button clicked: " + sec_val);
               // debug end
-              sendImg(interaction_channel, "img/" + mode + question_num + dir_val + ".png");
+              sendImg(interaction_channel, "" + mode + question_num + dir_val + ".png");
               interaction.reply({ content: msgList['startTimer'], ephemeral: false });
               return;
             }
