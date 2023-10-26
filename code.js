@@ -281,28 +281,28 @@ let commands = [
 ];
 //　スラッシュコマンドの追加を行う
 
-for (let i = 0; i < num_of_questions; i++) {
-  commands.push({
-    name: 'a' + i,
-    description: 'a' + i + 'を実行します。'
-  });
-  commands.push({
-    name: 'b' + i,
-    description: 'b' + i + 'を実行します。'
-  });
-  ["45", "90"].forEach(sec_val => {
-    dirIter.forEach(dir_val => {
-      commands.push({
-        name: sec_val + "_a_" + i + "_" + dir_val,
-        description: sec_val + "_a_" + i + "_" + dir_val + "を実行します。"
-      });
-      commands.push({
-        name: sec_val + "_b_" + i + "_" + dir_val,
-        description: sec_val + "_b_" + i + "_" + dir_val + "を実行します。"
-      });
-    });
-  });
-}
+// for (let i = 0; i < num_of_questions; i++) {
+//   commands.push({
+//     name: 'a' + i,
+//     description: 'a' + i + 'を実行します。'
+//   });
+//   commands.push({
+//     name: 'b' + i,
+//     description: 'b' + i + 'を実行します。'
+//   });
+//   ["45", "90"].forEach(sec_val => {
+//     dirIter.forEach(dir_val => {
+//       commands.push({
+//         name: sec_val + "_a_" + i + "_" + dir_val,
+//         description: sec_val + "_a_" + i + "_" + dir_val + "を実行します。"
+//       });
+//       commands.push({
+//         name: sec_val + "_b_" + i + "_" + dir_val,
+//         description: sec_val + "_b_" + i + "_" + dir_val + "を実行します。"
+//       });
+//     });
+//   });
+// }
 
 const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
 client.on("ready", (message) => {
