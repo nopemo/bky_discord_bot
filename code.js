@@ -560,14 +560,14 @@ async function onInteraction(interaction) {
       }
       dirIter.forEach(dir_val => {
         for (let i = 0; i < num_of_questions; i++) {
-          if (interaction.commandName == sec_val + "_" + i + "a_" + dir_val) {
+          if (interaction.commandName == sec_val + "_a_" + i + "_" + dir_val) {
             interaction.reply({
               components: [
                 new MessageActionRow().addComponents(buttons[sec_val + "_a_" + i + "_" + dir_val])], ephemeral: false
             });
             return;
           }
-          else if (interaction.commandName == sec_val + "_" + i + "b_" + dir_val) {
+          else if (interaction.commandName == sec_val + "_b_" + i + "_" + dir_val) {
             interaction.reply({
               components: [
                 new MessageActionRow().addComponents(buttons[sec_val + "_b_" + i + "_" + dir_val])], ephemeral: false
