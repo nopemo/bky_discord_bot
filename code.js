@@ -308,7 +308,7 @@ async function onInteraction(interaction) {
     for (let i = 0; i < num_of_questions; i++) {
       if (interaction.customId == "a" + i + "_obst" || interaction.customId == "b" + i + "_obst") {
         let mode = interaction.customId[0];
-        let question_num = "60";
+        let sec_val = "60";
         sendImg(interaction_channel, mode + i + ".png");
         const remain30sec = setTimeout(() => {
           if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
