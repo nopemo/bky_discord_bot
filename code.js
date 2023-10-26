@@ -215,12 +215,12 @@ for (let i = 0; i < num_of_questions; i++) {
   ["45", "90"].forEach(sec_val => {
     dirIter.forEach(dir_val => {
       commands.push({
-        name: sec_val + "_" + i + "_a_" + dir_val[0],
-        description: sec_val + "_" + i + "_a_" + dir_val + "を実行します。"
+        name: sec_val + "_a_" + i + "_" + dir_val,
+        description: sec_val + "_a_" + i + "_" + dir_val + "を実行します。"
       });
       commands.push({
-        name: sec_val + "_" + i + "_b_" + dir_val[0],
-        description: sec_val + "_" + i + "_b_" + dir_val + "を実行します。"
+        name: sec_val + "_b_" + i + "_" + dir_val,
+        description: sec_val + "_b_" + i + "_" + dir_val + "を実行します。"
       });
     });
   });
