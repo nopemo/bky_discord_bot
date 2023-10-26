@@ -212,7 +212,7 @@ for (let i = 0; i < num_of_questions; i++) {
     name: 'b' + i,
     description: 'b' + i + 'を実行します。'
   });
-  secsIter.forEach(sec_val => {
+  ["45", "90"].forEach(sec_val => {
     dirIter.forEach(dir_val => {
       commands.push({
         name: sec_val + "_" + i + "_a_" + dir_val[0],
