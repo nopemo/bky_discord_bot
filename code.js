@@ -465,6 +465,7 @@ async function onInteraction(interaction) {
             let mode = interaction.customId.split("_")[1];
             let question_num = interaction.customId.split("_")[2];
             let dir_val = interaction.customId.split("_")[3];
+            console.log("here you come!!, " + sec_val + " " + mode + " " + question_num + " " + dir_val);
             if (statusList[interaction_channel].getMoving(sec_val)) {
               interaction.reply({ content: msgList['buttonAlready'], ephemeral: true });
               return;
