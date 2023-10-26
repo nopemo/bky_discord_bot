@@ -309,6 +309,25 @@ async function onInteraction(interaction) {
       if (interaction.customId == "a" + i + "_obst" || interaction.customId == "b" + i + "_obst") {
         let mode = interaction.customId[0];
         let sec_val = "60";
+        console.log("secsIter for each: " + sec_val);
+        // debug end
+        if (statusList[interaction_channel].getMoving(sec_val)) {
+          interaction.reply({ content: msgList['buttonAlready'], ephemeral: true });
+          return;
+        }
+        statusList[interaction_channel].setMoving(sec_val, true);
+        statusList[interaction_channel].setPassedTime(sec_val, 0);
+        // debug start
+        console.log("the button clicked: " + sec_val);
+        // debug end
+        if (statusList[interaction_channel] === "disactivated") {
+          console.log("the button has been terminated because the status is disactivated: " + sec_val);
+          return;
+        }
+        if (!statusList[interaction_channel].getMoving(sec_val)) {
+          console.log("the button has been terminated because the status is not moving: " + sec_val);
+          return;
+        }
         sendImg(interaction_channel, mode + i + ".png");
         const remain30sec = setTimeout(() => {
           if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
