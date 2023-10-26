@@ -200,84 +200,84 @@ let commands = [
     name: 'a0',
     description: 'a0を実行します。'
   },
-  {
-    name: "variables_test",
-    description: "引数を用いたコマンドのテストを行います。",
-    options: [
-      {
-        type: "STRING",
-        name: "question_num",
-        description: "何問目ですか？",
-        required: true,
-        choices: [
-          {
-            name: "チュートリアル",
-            value: "0"
-          },
-          {
-            name: "1問目",
-            value: "1"
-          },
-          {
-            name: "2問目",
-            value: "2"
-          }
-        ],
-      },
-      {
-        type: "STRING",
-        name: "mode",
-        description: "どちらのモードですか？",
-        required: true,
-        choices: [
-          {
-            name: "a",
-            value: "a"
-          },
-          {
-            name: "b",
-            value: "b"
-          }
-        ],
-      },
-      {
-        type: "STRING",
-        name: "dir",
-        description: "どちらの方向ですか？",
-        required: true,
-        choices: [
-          {
-            name: "left",
-            value: "left"
-          },
-          {
-            name: "middle",
-            value: "middle"
-          },
-          {
-            name: "right",
-            value: "right"
-          }
-        ],
-      },
-      {
-        type: "STRING",
-        name: "sec_val",
-        description: "何秒ですか？",
-        required: true,
-        choices: [
-          {
-            name: "45",
-            value: "45"
-          },
-          {
-            name: "90",
-            value: "90"
-          }
-        ]
-      }
-    ]
-  }
+  // {
+  //   name: "variables_test",
+  //   description: "引数を用いたコマンドのテストを行います。",
+  //   options: [
+  //     {
+  //       type: "STRING",
+  //       name: "question_num",
+  //       description: "何問目ですか？",
+  //       required: true,
+  //       choices: [
+  //         {
+  //           name: "チュートリアル",
+  //           value: "0"
+  //         },
+  //         {
+  //           name: "1問目",
+  //           value: "1"
+  //         },
+  //         {
+  //           name: "2問目",
+  //           value: "2"
+  //         }
+  //       ],
+  //     },
+  //     {
+  //       type: "STRING",
+  //       name: "mode",
+  //       description: "どちらのモードですか？",
+  //       required: true,
+  //       choices: [
+  //         {
+  //           name: "a",
+  //           value: "a"
+  //         },
+  //         {
+  //           name: "b",
+  //           value: "b"
+  //         }
+  //       ],
+  //     },
+  //     {
+  //       type: "STRING",
+  //       name: "dir",
+  //       description: "どちらの方向ですか？",
+  //       required: true,
+  //       choices: [
+  //         {
+  //           name: "left",
+  //           value: "left"
+  //         },
+  //         {
+  //           name: "middle",
+  //           value: "middle"
+  //         },
+  //         {
+  //           name: "right",
+  //           value: "right"
+  //         }
+  //       ],
+  //     },
+  //     {
+  //       type: "STRING",
+  //       name: "sec_val",
+  //       description: "何秒ですか？",
+  //       required: true,
+  //       choices: [
+  //         {
+  //           name: "45",
+  //           value: "45"
+  //         },
+  //         {
+  //           name: "90",
+  //           value: "90"
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }
 ];
 //　スラッシュコマンドの追加を行う
 
