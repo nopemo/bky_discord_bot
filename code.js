@@ -495,21 +495,19 @@ async function onInteraction(interaction) {
   }
   else if (interaction.isCommand()) {
     for (let i = 0; i < num_of_questions; i++) {
-      if (let i = 0; i < num_of_questions; i++) {
-        if (interaction.commandName == "a" + i) {
-          interaction.reply({
-            components: [
-              new MessageActionRow().addComponents(buttons["a" + i + "_obst"])], ephemeral: false
-          });
-          return;
-        }
-        else if (interaction.commandName == "b" + i) {
-          interaction.reply({
-            components: [
-              new MessageActionRow().addComponents(buttons["b" + i + "_obst"])], ephemeral: false
-          });
-          return;
-        }
+      if (interaction.commandName == "a" + i) {
+        interaction.reply({
+          components: [
+            new MessageActionRow().addComponents(buttons["a" + i + "_obst"])], ephemeral: false
+        });
+        return;
+      }
+      else if (interaction.commandName == "b" + i) {
+        interaction.reply({
+          components: [
+            new MessageActionRow().addComponents(buttons["b" + i + "_obst"])], ephemeral: false
+        });
+        return;
       }
     }
     secsIter.forEach(sec_val => {
