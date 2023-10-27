@@ -1,7 +1,7 @@
 const { ButtonBuilder, ButtonStyle, Client, MessageButton, MessageActionRow } = require("discord.js");
 const options = { intents: ["GUILDS", "GUILD_MESSAGES"] };
 const client = new Client(options);
-const secsIter = ['120', '90', '60', '45'];
+const secsIter = ['120', '90', '60', '45', '180'];
 const dirIter = ['left', 'middle', 'right'];
 let statusList = {};
 function sendMsg(channelId, text, option = {}) {
@@ -21,8 +21,8 @@ function findKeyByValue(value, obj) {
 class Status {
   constructor() {
     this.status = "init";
-    this.is_sents = { "120": false, "90": false, "60": false, "45": false };
-    this.is_movings = { "120": false, "90": false, "60": false, "45": false };
+    this.is_sents = { "120": false, "90": false, "60": false, "45": false, "180": false };
+    this.is_movings = { "120": false, "90": false, "60": false, "45": false, "180": false };
     this.passed_time = { "120": 0, "90": 0, "60": 0, "45": 0 };
   };
   setStatus(status) {
@@ -50,16 +50,16 @@ class Status {
     return this.passed_time[button_name];
   }
   resetSent() {
-    this.is_sents = { "120": false, "90": false, "60": false, "45": false };
+    this.is_sents = { "120": false, "90": false, "60": false, "45": false, "180": false };
   }
   resetMoving() {
-    this.is_movings = { "120": false, "90": false, "60": false, "45": false };
+    this.is_movings = { "120": false, "90": false, "60": false, "45": false, "180": false };
   }
   ActivateAllSent() {
-    this.is_sents = { "120": true, "90": true, "60": true, "45": true };
+    this.is_sents = { "120": true, "90": true, "60": true, "45": true, "180": true };
   }
   ActivateAllMoving() {
-    this.is_movings = { "120": true, "90": true, "60": true, "45": true };
+    this.is_movings = { "120": true, "90": true, "60": true, "45": true, "180": true };
   }
   setIntervalAndTimeOut(interval, timeout) {
     this.interval = interval;
@@ -84,17 +84,25 @@ let msgList = {
   'buttonAlready': "ボタンは既に押されています。",
   'greetServer': server_name + " has woken up! Hello!",
   'sentAlready': "タイマーは既に送信されています。",
-  '5secRemaining': "5秒前です。",
-  'terminateTimer': "====終了====",
+  '5secRemaining': "5秒前です！",
+  'terminateTimer': "===終了===",
   'timerHasStarted': "タイマーを開始しました。",
   'abortTimer': "タイマーを停止しました。",
-  'start60secPrepare': "スタート！隠す場所を左,右,中央から選んでください！",
+  'start60secPrepare': "スタート！\n隠す場所を左,中央,右から選んでください！",
   '30secRemainingPrepare': "残り30秒！",
   '10secRemainingPrepare': "残り10秒！",
-  '0secRemainingPrepare': "@everyone \n終了です！\n続いて、「答えるフェーズ」ですので、一般チャンネルの方をご覧下さい！",
+  '0secRemainingPrepare': "終了です！\n続いて、「解答フェーズ」です！\n進行からの指示があるまでこのままお待ちください。",
   'left': "左を選択しました。",
   'middle': "中央を選択しました。",
-  'right': "右を選択しました。"
+  'right': "右を選択しました。",
+  'lastAlready': "コマンド実行済みです。",
+  'start180secLast': "制限時間は3分間です！",
+  '120secRemainingLast': "残り2分",
+  '90secRemainingLast': "残り1分30秒",
+  '60secRemainingLast': "残り1分",
+  '30secRemainingLast': "残り30秒。\n解答の修正は制限時間内にお願いします。\nどうしてもわからない場合は「わからない」と送信してください",
+  '10secRemainingLast': "残り10秒",
+  '0secRemainingLast': "終了"
 }
 
 
@@ -130,6 +138,10 @@ const button_right = new MessageButton()
   .setCustomId('right')
   .setLabel('右')
   .setStyle('PRIMARY')
+const button_last_hint = new MessageButton()
+  .setCustomId('last_hint')
+  .setLabel('ヒント')
+  .setStyle('PRIMARY')
 let buttons = {
   "120": button_120,
   "90": button_90,
@@ -162,22 +174,26 @@ for (let i = 0; i < num_of_questions; i++) {
   });
 };
 let commands = [
-  {
-    name: '45',
-    description: '45秒のタイマーを送信します。'
-  },
-  {
-    name: '60',
-    description: '60秒のタイマーを送信します。'
-  },
-  {
-    name: '90',
-    description: '90秒のタイマーを送信します。'
-  },
+  // {
+  //   name: '45',
+  //   description: '45秒のタイマーを送信します。'
+  // },
+  // {
+  //   name: '60',
+  //   description: '60秒のタイマーを送信します。'
+  // },
+  // {
+  //   name: '90',
+  //   description: '90秒のタイマーを送信します。'
+  // },
   // {
   //   name: '120',
   //   description: '120秒のタイマーを送信します。'
   // },
+  {
+    name: 'staff_only',
+    description: 'スタッフ用コマンドです。'
+  },
   {
     name: 'stop',
     description: 'タイマーを停止します。'
@@ -237,11 +253,11 @@ let commands = [
         required: true,
         choices: [
           {
-            name: "a",
+            name: "A",
             value: "a"
           },
           {
-            name: "b",
+            name: "B",
             value: "b"
           }
         ],
@@ -285,7 +301,7 @@ let commands = [
     ]
   },
   {
-    name: "obstacle",
+    name: "hide",
     description: "妨害フェイズを始めます。",
     options: [
       {
@@ -295,11 +311,11 @@ let commands = [
         required: true,
         choices: [
           {
-            name: "a",
+            name: "A",
             value: "a"
           },
           {
-            name: "b",
+            name: "B",
             value: "b"
           }
         ]
@@ -339,8 +355,6 @@ let commands = [
     ]
   }
 ];
-
-const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
 client.on("ready", (message) => {
   // スラッシュコマンドの登録
   client.application.commands.set(commands);
@@ -373,6 +387,7 @@ client.on("messageCreate", message => {
   //     return;
   //   }
   // }
+
   if (message.content == "stop") {
     statusList[message.channel.id].setStatus('disactivated');
     statusList[message.channel.id].resetSent();
@@ -387,31 +402,25 @@ client.on("messageCreate", message => {
 //ここまで
 
 
-function sendButton(channel_id, button_name) {
-  client.channels.cache.get(channel_id).send({
-    components: [
-      new MessageActionRow().addComponents(buttons[button_name])
-    ]
-  });
-  statusList[channel_id].setStatus('buttons_sent');
-  console.log(channel_id + "にボタン" + button_name + "を送信しました。");
-}
-function sendDirButtons(channel_id) {
-  client.channels.cache.get(channel_id).send({
-    components: [
-      new MessageActionRow().addComponents(buttons['left']),
-      new MessageActionRow().addComponents(buttons['middle']),
-      new MessageActionRow().addComponents(buttons['right'])
-    ]
-  });
-  statusList[channel_id].setStatus('buttons_sent');
-  console.log(channel_id + "に方向ボタンを送信しました。");
-}
-function sendImg(channel_id, img_name) {
+async function sendImg(channel_id, img_name, send_dir_buttons = true, send_msg = "") {
   let send_image_url = "https://cdn.glitch.global/127e421d-34d2-438f-906c-d1dfaae6ee13/" + img_name;
-  client.channels.cache.get(channel_id).send({
-    files: [send_image_url]
-  });
+  if (send_dir_buttons) {
+    await client.channels.cache.get(channel_id).send({
+      files: [send_image_url],
+      components: [
+        new MessageActionRow().addComponents(
+          buttons['left'],
+          buttons['middle'],
+          buttons['right']
+        )
+      ]
+    });
+  }
+  else {
+    await client.channels.cache.get(channel_id).send({
+      files: [send_image_url]
+    });
+  }
   statusList[channel_id].setStatus('img_sent');
   console.log(channel_id + "に画像" + img_name + "を送信しました。");
 }
@@ -452,8 +461,7 @@ async function onInteraction(interaction) {
           console.log("the button has been terminated because the status is not moving: " + sec_val);
           return;
         }
-        sendImg(interaction_channel, mode + i + ".png");
-        sendDirButtons(interaction_channel);
+        await sendImg(interaction_channel, mode + i + ".png");
         const remain30sec = setTimeout(() => {
           if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
             return;
@@ -478,7 +486,7 @@ async function onInteraction(interaction) {
         // debug start
         console.log("the button clicked: " + sec_val);
         // debug end
-        interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
+        await interaction.reply({ content: msgList['start60secPrepare'], ephemeral: false });
         return;
       }
 
@@ -581,8 +589,8 @@ async function onInteraction(interaction) {
         }
       }
     });
-    dirIter.forEach(dir_val => {
-      secsIter.forEach(sec_val => {
+    for (let dir_val of dirIter) {
+      for (let sec_val of secsIter) {
         for (let i = 0; i < num_of_questions; i++) {
           if (interaction.customId == sec_val + "_a_" + i + "_" + dir_val || interaction.customId == sec_val + "_b_" + i + "_" + dir_val) {
             let sec_val = interaction.customId.split("_")[0];
@@ -648,18 +656,76 @@ async function onInteraction(interaction) {
               // debug start
               console.log("the button clicked: " + sec_val);
               // debug end
-              sendImg(interaction_channel, "" + mode + question_num + "_" + dir_val + ".png");
-              sendDirButtons(interaction_channel);
-              interaction.reply({ content: msgList['startTimer'], ephemeral: false });
+              await sendImg(interaction_channel, "" + mode + question_num + "_" + dir_val + ".png");
+              await interaction.reply({ content: msgList['startTimer'], ephemeral: false });
               return;
             }
           }
         }
-      });
-    });
+      };
+    };
   }
   else if (interaction.isCommand()) {
-    if (interaction.commandName == "obstacle") {
+    if (interaction.commandName == "staff_only") {
+      let sec_val = "180";
+      console.log("final section");
+      if (statusList[interaction_channel].getMoving(sec_val)) {
+        interaction.reply({ content: msgList['lastAlready'], ephemeral: true });
+        return;
+      }
+      statusList[interaction_channel].setMoving(sec_val, true);
+      statusList[interaction_channel].setPassedTime(sec_val, 0);
+      if (statusList[interaction_channel] === "disactivated") {
+        console.log("the button has been terminated because the status is disactivated: " + sec_val);
+        return;
+      }
+      if (!statusList[interaction_channel].getMoving(sec_val)) {
+        console.log("the button has been terminated because the status is not moving: " + sec_val);
+        return;
+      }
+      const remain120sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['120secRemainingLast']);
+      }, 1000 * (60));
+      const remain90sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['90secRemainingLast']);
+      }, 1000 * (60 + 30));
+      const remain60sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['60secRemainingLast']);
+      }, 1000 * (60 + 60));
+      const remain30sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['30secRemainingLast']);
+      }, 1000 * (60 + 60 + 30));
+      const remain10sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['10secRemainingLast']);
+      }, 1000 * (60 + 60 + 30 + 20));
+      const remain0sec = setTimeout(() => {
+        if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
+          return;
+        }
+        sendMsg(interaction_channel, msgList['0secRemainingLast']);
+        statusList[interaction_channel].setMoving(sec_val, false);
+        statusList[interaction_channel].passed_time[sec_val] = 0;
+      }, 1000 * (180));
+      statusList[interaction_channel].setIntervalAndTimeOut(null, [remain120sec, remain90sec, remain60sec, remain30sec, remain10sec, remain0sec]);
+      await interaction.reply({ content: msgList['start180secLast'], ephemeral: true });
+      return;
+    }
+    if (interaction.commandName == "hide") {
       let mode = interaction.options.getString("mode");
       let question_num = interaction.options.getString("question_num");
       interaction.reply({
