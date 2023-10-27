@@ -121,18 +121,15 @@ const button_45 = new MessageButton()
 const button_left = new MessageButton()
   .setCustomId('left')
   .setLabel('左')
-  .setStyle('SUCCESS')
-  .setEmoji('🔴');
+  .setStyle('PRIMARY')
 const button_middle = new MessageButton()
   .setCustomId('middle')
   .setLabel('中央')
-  .setStyle('SUCCESS')
-  .setEmoji('🔴');
+  .setStyle('PRIMARY')
 const button_right = new MessageButton()
   .setCustomId('right')
   .setLabel('右')
-  .setStyle('SUCCESS')
-  .setEmoji('🔴');
+  .setStyle('PRIMARY')
 let buttons = {
   "120": button_120,
   "90": button_90,
@@ -143,23 +140,24 @@ let buttons = {
   "right": button_right
 };
 let num_of_questions = 6;
+let temp_iter = ["45", "90"];
 for (let i = 0; i < num_of_questions; i++) {
   buttons["a" + i + "_obst"] = new MessageButton()
     .setCustomId("a" + i + "_obst")
     .setLabel("妨害開始")
-    .setStyle('SUCCESS')
+    .setStyle('DANGER')
   // .setEmoji('🔴');
-  secsIter.forEach(sec_val => {
+  temp_iter.forEach(sec_val => {
     dirIter.forEach(dir_val => {
       buttons[sec_val + "_a_" + i + "_" + dir_val] = new MessageButton()
         .setCustomId(sec_val + "_a_" + i + "_" + dir_val)
         .setLabel("解答開始")
-        .setStyle('DANGER')
+        .setStyle('SUCCESS')
       // .setEmoji('🔴');
       buttons[sec_val + "_b_" + i + "_" + dir_val] = new MessageButton()
         .setCustomId(sec_val + "_b_" + i + "_" + dir_val)
         .setLabel("解答開始")
-        .setStyle('DANGER')
+        .setStyle('SUCCESS')
     });
   });
 };
@@ -184,125 +182,163 @@ let commands = [
     name: 'stop',
     description: 'タイマーを停止します。'
   },
-  {
-    name: 'left',
-    description: '左を選択します。'
-  },
-  {
-    name: 'middle',
-    description: '中央を選択します。'
-  },
-  {
-    name: 'right',
-    description: '右を選択します。'
-  },
-  {
-    name: 'a0',
-    description: 'a0を実行します。'
-  },
   // {
-  //   name: "variables_test",
-  //   description: "引数を用いたコマンドのテストを行います。",
-  //   options: [
-  //     {
-  //       type: "STRING",
-  //       name: "question_num",
-  //       description: "何問目ですか？",
-  //       required: true,
-  //       choices: [
-  //         {
-  //           name: "チュートリアル",
-  //           value: "0"
-  //         },
-  //         {
-  //           name: "1問目",
-  //           value: "1"
-  //         },
-  //         {
-  //           name: "2問目",
-  //           value: "2"
-  //         }
-  //       ],
-  //     },
-  //     {
-  //       type: "STRING",
-  //       name: "mode",
-  //       description: "どちらのモードですか？",
-  //       required: true,
-  //       choices: [
-  //         {
-  //           name: "a",
-  //           value: "a"
-  //         },
-  //         {
-  //           name: "b",
-  //           value: "b"
-  //         }
-  //       ],
-  //     },
-  //     {
-  //       type: "STRING",
-  //       name: "dir",
-  //       description: "どちらの方向ですか？",
-  //       required: true,
-  //       choices: [
-  //         {
-  //           name: "left",
-  //           value: "left"
-  //         },
-  //         {
-  //           name: "middle",
-  //           value: "middle"
-  //         },
-  //         {
-  //           name: "right",
-  //           value: "right"
-  //         }
-  //       ],
-  //     },
-  //     {
-  //       type: "STRING",
-  //       name: "sec_val",
-  //       description: "何秒ですか？",
-  //       required: true,
-  //       choices: [
-  //         {
-  //           name: "45",
-  //           value: "45"
-  //         },
-  //         {
-  //           name: "90",
-  //           value: "90"
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
+  //   name: 'left',
+  //   description: '左を選択します。'
+  // },
+  // {
+  //   name: 'middle',
+  //   description: '中央を選択します。'
+  // },
+  // {
+  //   name: 'right',
+  //   description: '右を選択します。'
+  // },
+  {
+    name: "answer",
+    description: "解答フェイズを始めます。",
+    options: [
+      {
+        type: "STRING",
+        name: "question_num",
+        description: "何問目ですか？",
+        required: true,
+        choices: [
+          {
+            name: "チュートリアル",
+            value: "0"
+          },
+          {
+            name: "1問目",
+            value: "1"
+          },
+          {
+            name: "2問目",
+            value: "2"
+          },
+          {
+            name: "3問目",
+            value: "3"
+          },
+          {
+            name: "4問目",
+            value: "4"
+          },
+          {
+            name: "5問目",
+            value: "5"
+          },
+        ],
+      },
+      {
+        type: "STRING",
+        name: "mode",
+        description: "どちらのモードですか？",
+        required: true,
+        choices: [
+          {
+            name: "a",
+            value: "a"
+          },
+          {
+            name: "b",
+            value: "b"
+          }
+        ],
+      },
+      {
+        type: "STRING",
+        name: "dir",
+        description: "どちらの方向ですか？",
+        required: true,
+        choices: [
+          {
+            name: "left",
+            value: "left"
+          },
+          {
+            name: "middle",
+            value: "middle"
+          },
+          {
+            name: "right",
+            value: "right"
+          }
+        ],
+      },
+      {
+        type: "STRING",
+        name: "sec_val",
+        description: "何秒ですか？",
+        required: true,
+        choices: [
+          {
+            name: "45",
+            value: "45"
+          },
+          {
+            name: "90",
+            value: "90"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "obstacle",
+    description: "妨害フェイズを始めます。",
+    options: [
+      {
+        type: "STRING",
+        name: "mode",
+        description: "どちらのモードですか？",
+        required: true,
+        choices: [
+          {
+            name: "a",
+            value: "a"
+          },
+          {
+            name: "b",
+            value: "b"
+          }
+        ]
+      },
+      {
+        type: "STRING",
+        name: "question_num",
+        description: "何問目ですか？",
+        required: true,
+        choices: [
+          {
+            name: "チュートリアル",
+            value: "0"
+          },
+          {
+            name: "1問目",
+            value: "1"
+          },
+          {
+            name: "2問目",
+            value: "2"
+          },
+          {
+            name: "3問目",
+            value: "3"
+          },
+          {
+            name: "4問目",
+            value: "4"
+          },
+          {
+            name: "5問目",
+            value: "5"
+          },
+        ]
+      }
+    ]
+  }
 ];
-//　スラッシュコマンドの追加を行う
-
-for (let i = 0; i < num_of_questions; i++) {
-  commands.push({
-    name: 'a' + i,
-    description: 'a' + i + 'を実行します。'
-  });
-  commands.push({
-    name: 'b' + i,
-    description: 'b' + i + 'を実行します。'
-  });
-  ["45", "90"].forEach(sec_val => {
-    dirIter.forEach(dir_val => {
-      commands.push({
-        name: sec_val + "_a_" + i + "_" + dir_val,
-        description: sec_val + "_a_" + i + "_" + dir_val + "を実行します。"
-      });
-      commands.push({
-        name: sec_val + "_b_" + i + "_" + dir_val,
-        description: sec_val + "_b_" + i + "_" + dir_val + "を実行します。"
-      });
-    });
-  });
-}
 
 const answers = { "120": "スマンブラッキーこれ消すのね、了解したわ。", "90": "ワンダーフォーｙ", "60": "ｋｇｄｌｇｓｌかか", "45": "ドどんどんドどんあ" };
 client.on("ready", (message) => {
@@ -353,13 +389,23 @@ client.on("messageCreate", message => {
 
 function sendButton(channel_id, button_name) {
   client.channels.cache.get(channel_id).send({
-    // content: 'a',
     components: [
       new MessageActionRow().addComponents(buttons[button_name])
     ]
   });
   statusList[channel_id].setStatus('buttons_sent');
   console.log(channel_id + "にボタン" + button_name + "を送信しました。");
+}
+function sendDirButtons(channel_id) {
+  client.channels.cache.get(channel_id).send({
+    components: [
+      new MessageActionRow().addComponents(buttons['left']),
+      new MessageActionRow().addComponents(buttons['middle']),
+      new MessageActionRow().addComponents(buttons['right'])
+    ]
+  });
+  statusList[channel_id].setStatus('buttons_sent');
+  console.log(channel_id + "に方向ボタンを送信しました。");
 }
 function sendImg(channel_id, img_name) {
   let send_image_url = "https://cdn.glitch.global/127e421d-34d2-438f-906c-d1dfaae6ee13/" + img_name;
@@ -407,6 +453,7 @@ async function onInteraction(interaction) {
           return;
         }
         sendImg(interaction_channel, mode + i + ".png");
+        sendDirButtons(interaction_channel);
         const remain30sec = setTimeout(() => {
           if (statusList[interaction_channel] === "disactivated" || !statusList[interaction_channel].getMoving(sec_val)) {
             return;
@@ -534,11 +581,9 @@ async function onInteraction(interaction) {
         }
       }
     });
-    console.log("check point1");
     dirIter.forEach(dir_val => {
       secsIter.forEach(sec_val => {
-        for (let i = 0; i < num_of_questions; i++) { ///ここから
-          console.log("check point2");
+        for (let i = 0; i < num_of_questions; i++) {
           if (interaction.customId == sec_val + "_a_" + i + "_" + dir_val || interaction.customId == sec_val + "_b_" + i + "_" + dir_val) {
             let sec_val = interaction.customId.split("_")[0];
             let mode = interaction.customId.split("_")[1];
@@ -604,30 +649,24 @@ async function onInteraction(interaction) {
               console.log("the button clicked: " + sec_val);
               // debug end
               sendImg(interaction_channel, "" + mode + question_num + "_" + dir_val + ".png");
+              sendDirButtons(interaction_channel);
               interaction.reply({ content: msgList['startTimer'], ephemeral: false });
               return;
             }
-          }///ここまで
+          }
         }
       });
     });
   }
   else if (interaction.isCommand()) {
-    for (let i = 0; i < num_of_questions; i++) {
-      if (interaction.commandName == "a" + i) {
-        interaction.reply({
-          components: [
-            new MessageActionRow().addComponents(buttons["a" + i + "_obst"])], ephemeral: false
-        });
-        return;
-      }
-      else if (interaction.commandName == "b" + i) {
-        interaction.reply({
-          components: [
-            new MessageActionRow().addComponents(buttons["b" + i + "_obst"])], ephemeral: false
-        });
-        return;
-      }
+    if (interaction.commandName == "obstacle") {
+      let mode = interaction.options.getString("mode");
+      let question_num = interaction.options.getString("question_num");
+      interaction.reply({
+        components: [
+          new MessageActionRow().addComponents(buttons[mode + question_num + "_obst"])], ephemeral: false
+      });
+      return;
     }
     secsIter.forEach(sec_val => {
       if (interaction.commandName == sec_val) {
@@ -637,25 +676,18 @@ async function onInteraction(interaction) {
         });
         return;
       }
-      dirIter.forEach(dir_val => {
-        for (let i = 0; i < num_of_questions; i++) {
-          if (interaction.commandName == sec_val + "_a_" + i + "_" + dir_val) {
-            interaction.reply({
-              components: [
-                new MessageActionRow().addComponents(buttons[sec_val + "_a_" + i + "_" + dir_val])], ephemeral: false
-            });
-            return;
-          }
-          else if (interaction.commandName == sec_val + "_b_" + i + "_" + dir_val) {
-            interaction.reply({
-              components: [
-                new MessageActionRow().addComponents(buttons[sec_val + "_b_" + i + "_" + dir_val])], ephemeral: false
-            });
-            return;
-          }
-        }
-      });
     });
+    if (interaction.commandName == "answer") {
+      let mode = interaction.options.getString("mode");
+      let question_num = interaction.options.getString("question_num");
+      let dir_val = interaction.options.getString("dir");
+      let sec_val = interaction.options.getString("sec_val");
+      interaction.reply({
+        components: [
+          new MessageActionRow().addComponents(buttons[sec_val + "_" + mode + "_" + question_num + "_" + dir_val])], ephemeral: false
+      });
+      return;
+    }
     if (interaction.commandName == "stop") {
       statusList[interaction_channel].resetSent();
       statusList[interaction_channel].resetMoving();
