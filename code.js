@@ -177,6 +177,7 @@ for (let i = 0; i < num_of_questions; i++) {
     });
   });
 };
+// temp
 let commands = [
   // {
   //   name: '45',
