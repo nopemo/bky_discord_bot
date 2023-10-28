@@ -158,6 +158,10 @@ for (let i = 0; i < num_of_questions; i++) {
     .setCustomId("a" + i + "_obst")
     .setLabel("妨害開始")
     .setStyle('DANGER')
+  buttons["b" + i + "_obst"] = new MessageButton()
+    .setCustomId("b" + i + "_obst")
+    .setLabel("妨害開始")
+    .setStyle('DANGER')
   // .setEmoji('🔴');
   temp_iter.forEach(sec_val => {
     dirIter.forEach(dir_val => {
@@ -722,12 +726,13 @@ async function onInteraction(interaction) {
         statusList[interaction_channel].passed_time[sec_val] = 0;
       }, 1000 * (180));
       statusList[interaction_channel].setIntervalAndTimeOut(null, [remain120sec, remain90sec, remain60sec, remain30sec, remain10sec, remain0sec]);
-      await interaction.reply({ content: msgList['start180secLast'], ephemeral: true });
+      await interaction.reply({ content: msgList['start180secLast'], ephemeral: false });
       return;
     }
     if (interaction.commandName == "hide") {
       let mode = interaction.options.getString("mode");
       let question_num = interaction.options.getString("question_num");
+      console.log("button name is " + mode + question_num + "_obst");
       interaction.reply({
         components: [
           new MessageActionRow().addComponents(buttons[mode + question_num + "_obst"])], ephemeral: false
